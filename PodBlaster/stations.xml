@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<stations>
+
+  <station>
+    <stationName>NPR Politics</stationName>
+    <stationURL>https://www.npr.org/rss/podcast.php?id=510310</stationURL>
+    <stationFile>nprpolitics</stationFile>
+  </station>
+
+  <station>
+    <stationName>538 Politics</stationName>
+    <stationURL>https://www.espn.com/espnradio/feeds/rss/podcast.xml?id=14554755</stationURL>
+    <stationFile>538politics</stationFile>
+  </station>
+
+  <station>
+    <stationName>Serial</stationName>
+    <stationURL>http://feeds.serialpodcast.org/serialpodcast</stationURL>
+    <stationFile>serial</stationFile>
+  </station>
+
+  <station>
+    <stationName>Bag Man</stationName>
+    <stationURL>https://rss.art19.com/bagman</stationURL>
+    <stationFile>bagman</stationFile>
+  </station>
+  
+    <station>
+    <stationName>Reply All</stationName>
+    <stationURL>http://feeds.gimletmedia.com/hearreplyall</stationURL>
+    <stationFile>replayall</stationFile>
+  </station>
+
+  <station>
+    <stationName>Heavyweight</stationName>
+    <stationURL>http://feeds.gimletmedia.com/heavyweightpodcast</stationURL>
+    <stationFile>heavyweight</stationFile>
+  </station>
+
+
+</stations>
