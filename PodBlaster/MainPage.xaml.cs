@@ -29,6 +29,8 @@ using Windows.Storage.Streams;
 using Windows.Security.Cryptography;
 using Windows.Storage;
 using Windows.Networking.BackgroundTransfer;
+using Windows.Storage.Pickers;
+using Windows.UI.ViewManagement;
 
 namespace PodBlaster
 {
@@ -39,34 +41,29 @@ namespace PodBlaster
         public MainPage()
         {
             this.InitializeComponent();
+
+            StatusCommand.Text = "No Active Downloads";
+
+            ApplicationView.PreferredLaunchViewSize = new Size(320, 1000);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
             podcasts = new ObservableCollection<Podcast>();
 
             string XMLFilePath = Path.Combine(Package.Current.InstalledLocation.Path, "stations.xml");
             XDocument stationsXML = XDocument.Load(XMLFilePath);
 
-            //string stationName = stationsXML.DocumentElement.SelectSingleNode("station/stationName").InnerText;
-
-            // XmlNodeList stationList = stationsXML.SelectNodes("stations/station");
-
             var podData = from query in stationsXML.Descendants("station")
-                       select new Podcast
-                       {
-                           stationName = (string)query.Element("stationName"),
-                           stationURL = (string)query.Element("stationURL")
-                       };
+                          select new Podcast
+                          {
+                              stationName = (string)query.Element("stationName"),
+                              stationURL = (string)query.Element("stationURL")
+                          };
 
             PodList.ItemsSource = podData;
 
-           // MsgBox.Show("Populated");
-
-            //Console.WriteLine(stationList.Count);
-
-
-        
-
         }
 
-       
+
 
         private async void PodList_ItemClick(object sender, ItemClickEventArgs e)
         {
@@ -77,34 +74,26 @@ namespace PodBlaster
             Podcast poddy = e.ClickedItem as Podcast;
 
             string feedName = poddy.stationURL;
-            // XmlDocument rssFeed = new XmlDocument();
-
-            // rssFeed.Load(new StringReader(feedName));
-
-            // XmlNodeList itemNodes = rssFeed.GetElementsByTagName("item");
-            // string nodeURL = itemNodes[0].Attributes["url"]?.InnerText;
 
             Uri rssFeed = new Uri(feedName);
             feed = await client.RetrieveFeedAsync(rssFeed);
 
             int getNumberOfDownloads = epDownloads.SelectedIndex;
 
-            if (getNumberOfDownloads == 0) { getNumberOfDownloads = 1; }
-
-            for (int i = 0; i < getNumberOfDownloads; i++)
+            for (int i = 0; i < (getNumberOfDownloads + 1); i++)
             {
-                try { 
-                Windows.Web.Syndication.SyndicationItem item = feed.Items[i];
-                Windows.Web.Syndication.SyndicationLink link = feed.Links[0];
+                try {
+                    Windows.Web.Syndication.SyndicationItem item = feed.Items[i];
+                    Windows.Web.Syndication.SyndicationLink link = feed.Links[0];
 
-                Windows.Web.Syndication.SyndicationLink rssLink = item.Links.Last();
-                //string rssLinkToUse = rssLink.Uri.AbsoluteUri.ToString();
+                    Windows.Web.Syndication.SyndicationLink rssLink = item.Links.Last();
+                    //string rssLinkToUse = rssLink.Uri.AbsoluteUri.ToString();
 
-                string rssLinkToUse = String.Format("{0}{1}{2}{3}", rssLink.Uri.Scheme,
-        "://", rssLink.Uri.Authority, rssLink.Uri.AbsolutePath);
+                    string rssLinkToUse = String.Format("{0}{1}{2}{3}", rssLink.Uri.Scheme,
+            "://", rssLink.Uri.Authority, rssLink.Uri.AbsolutePath);
 
 
-                await httpDownloadAsync(rssLinkToUse);
+                    await httpDownloadAsync(rssLinkToUse);
                 }
                 catch (Exception foo)
                 {
@@ -112,8 +101,6 @@ namespace PodBlaster
                 }
             }
 
-            
-            
         }
 
         private async Task httpDownloadAsync(string stationURL)
@@ -121,7 +108,7 @@ namespace PodBlaster
 
             Uri uri = new Uri(stationURL);
 
-             StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync("Podblaster Downloads");
+            StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync("Podblaster Downloads");
 
             StorageFile destinationFile = await PodBlasterFolder.CreateFileAsync(
                 System.IO.Path.GetFileName(uri.ToString()), CreationCollisionOption.ReplaceExisting);
@@ -129,40 +116,57 @@ namespace PodBlaster
             BackgroundDownloader downloader = new BackgroundDownloader();
             DownloadOperation download = downloader.CreateDownload(uri, destinationFile);
 
+            StatusCommand.Text = "Starting Download of " + System.IO.Path.GetFileName(uri.ToString()) + "...";
+
             await download.StartAsync();
 
-
-
-
+            StatusCommand.Text = "Downloaded " + System.IO.Path.GetFileName(uri.ToString()) + ".";
 
         }
 
         private async void Copy_Files_to_MP3(object sender, RoutedEventArgs e)
         {
-            //StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync("Podblaster Downloads");
-            //IReadOnlyList<StorageFile> fileListToCopy = await PodBlasterFolder.GetFilesAsync();
 
-//            StorageFolder DestinationFolder = await KnownFolders.RemovableDevices
+            FolderPicker picker = new FolderPicker();
 
-  //          foreach (var item in fileListToCopy)
-    //        {
-      //          StorageFile sandiskFile = await DestinationFolder.CreateFileAsync(item.ToString());
-        //        await item.CopyAsync(DestinationFolder);
-        //
-          //  }
+            picker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
 
+            picker.FileTypeFilter.Add("*");
+            StorageFolder podcastFolder = await picker.PickSingleFolderAsync();
+            StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync("Podblaster Downloads");
+            IReadOnlyList<StorageFile> fileListToCopy = await PodBlasterFolder.GetFilesAsync();
 
-            // StorageFile destinationFile = await PodBlasterFolder;
+            for (int foo = 0; foo < fileListToCopy.Count(); foo++)
+            {
+
+                Debug.WriteLine(fileListToCopy[foo].Path.ToString());
+                Debug.WriteLine(podcastFolder.Path.ToString());
+                //Debug.WriteLine(sandiskTargetFile.Name.ToString());
+                Debug.WriteLine(fileListToCopy[foo].Name.ToString());
+
+                StorageFile destinationFile = await podcastFolder.CreateFileAsync(fileListToCopy[foo].Name.ToString(), CreationCollisionOption.ReplaceExisting);
+
+                await fileListToCopy[foo].CopyAndReplaceAsync(destinationFile);
+
+            }
         }
+
 
         private async void Clear_Cache_Button_Click(object sender, RoutedEventArgs e)
         {
            StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync("Podblaster Downloads");
             IReadOnlyList <StorageFile> fileListToDelete = await PodBlasterFolder.GetFilesAsync();
-
             
+            for (int foo=0; foo < fileListToDelete.Count(); foo++ ) { 
 
-           // StorageFile destinationFile = await PodBlasterFolder;
+            Debug.WriteLine(fileListToDelete[foo].Path.ToString() );
+
+                await fileListToDelete[foo].DeleteAsync();
+ 
+
+            }
+
         }
+
     }
 }

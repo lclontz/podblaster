@@ -9,7 +9,17 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <ListView SelectionMode="None" x:Name="PodList" IsItemClickEnabled="True" ItemClick="PodList_ItemClick" HorizontalAlignment="Left" Height="907" Margin="10,10,0,0" VerticalAlignment="Top" Width="293" >
+        <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
+            <CommandBar.Content>
+                <TextBlock Text="" x:Name="StatusCommand"></TextBlock>
+            </CommandBar.Content>
+            <AppBarButton Icon="Add" Label="Copy to Player" Click="Copy_Files_to_MP3"/>
+            <AppBarButton Icon="Delete" Label="Clear Cache" Click="Clear_Cache_Button_Click"/>
+
+        </CommandBar>
+
+
+        <ListView SelectionMode="None" x:Name="PodList" IsItemClickEnabled="True" ItemClick="PodList_ItemClick" HorizontalAlignment="Left" Height="590" Margin="10,0,0,0" VerticalAlignment="Center" Width="293" >
 
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -19,7 +29,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <ComboBox x:Name="epDownloads" HorizontalAlignment="Left" Margin="368,241,0,0" VerticalAlignment="Top" Height="58" Width="166" PlaceholderText="# of Eps">
+        <ComboBox x:Name="epDownloads" HorizontalAlignment="Left" Margin="368,290,0,0" VerticalAlignment="Top" Height="58" Width="64" SelectedItem="1">
             <x:String>1</x:String>
             <x:String>2</x:String>
             <x:String>3</x:String>
@@ -28,10 +38,7 @@
             <x:String>6</x:String>
             <x:String>7</x:String>
         </ComboBox>
-        <Button Content="Copy Eps to MP3 Player" HorizontalAlignment="Left" Margin="368,154,0,0" VerticalAlignment="Top" Height="58" Width="178" Click="Copy_Files_to_MP3"/>
-        <Button Content="Clear Downloaded Cache" HorizontalAlignment="Left" Margin="368,65,0,0" VerticalAlignment="Top" Height="58" Width="201" Click="Clear_Cache_Button_Click"/>
-
-
+        <TextBox HorizontalAlignment="Left" Margin="368,253,0,0" Text="# of Episodes to Download:" VerticalAlignment="Top" Width="274" IsTabStop="False" BorderThickness="0" IsDoubleTapEnabled="False" IsHoldingEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" />
 
     </Grid>
 </Page>
