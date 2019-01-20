@@ -11,7 +11,21 @@
     <Grid>
         <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
             <CommandBar.Content>
-                <TextBlock Text="" x:Name="StatusCommand"></TextBlock>
+                <StackPanel Orientation="Horizontal"   >
+                
+                    <TextBlock Text="# of Episodes to Download: " x:Name="EpisodeLabel" Margin="20,0,20,0"></TextBlock>
+                    <ComboBox x:Name="epDownloads" HorizontalAlignment="Left"   Height="32" Width="44" SelectedItem="1" Margin="0,0,20,0">
+                        <x:String>1</x:String>
+                        <x:String>2</x:String>
+                        <x:String>3</x:String>
+                        <x:String>4</x:String>
+                        <x:String>5</x:String>
+                        <x:String>6</x:String>
+                        <x:String>7</x:String>
+                        <x:String>8</x:String>
+                    </ComboBox>
+                    <TextBlock Text="" x:Name="StatusCommand" Margin="0,0,20,0"></TextBlock>
+                </StackPanel>
             </CommandBar.Content>
             <AppBarButton Icon="Add" Label="Copy to Player" Click="Copy_Files_to_MP3"/>
             <AppBarButton Icon="Delete" Label="Clear Cache" Click="Clear_Cache_Button_Click"/>
@@ -19,7 +33,7 @@
         </CommandBar>
 
 
-        <ListView SelectionMode="None" x:Name="PodList" IsItemClickEnabled="True" ItemClick="PodList_ItemClick" HorizontalAlignment="Left" Height="590" Margin="10,0,0,0" VerticalAlignment="Center" Width="293" >
+        <ListView SelectionMode="None" x:Name="PodList" IsItemClickEnabled="True" ItemClick="PodList_ItemClick" HorizontalAlignment="Left" Height="590" Margin="10,48,0,0" VerticalAlignment="Top" Width="293" >
 
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -29,16 +43,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <ComboBox x:Name="epDownloads" HorizontalAlignment="Left" Margin="368,290,0,0" VerticalAlignment="Top" Height="58" Width="64" SelectedItem="1">
-            <x:String>1</x:String>
-            <x:String>2</x:String>
-            <x:String>3</x:String>
-            <x:String>4</x:String>
-            <x:String>5</x:String>
-            <x:String>6</x:String>
-            <x:String>7</x:String>
-        </ComboBox>
-        <TextBox HorizontalAlignment="Left" Margin="368,253,0,0" Text="# of Episodes to Download:" VerticalAlignment="Top" Width="274" IsTabStop="False" BorderThickness="0" IsDoubleTapEnabled="False" IsHoldingEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" />
 
     </Grid>
 </Page>

@@ -36,6 +36,28 @@
     <stationURL>http://feeds.gimletmedia.com/heavyweightpodcast</stationURL>
     <stationFile>heavyweight</stationFile>
   </station>
+  
+    <station>
+    <stationName>99% Invisible</stationName>
+    <stationURL>http://feeds.99percentinvisible.org/99percentinvisible</stationURL>
+    <stationFile>99percent</stationFile>
+  </station>
+  
+      <station>
+    <stationName>Slow Burn</stationName>
+    <stationURL>hhttp://feeds.megaphone.fm/watergate</stationURL>
+    <stationFile>slowburn</stationFile>
+  </station>
 
+    <station>
+    <stationName>The Rewatchables</stationName>
+    <stationURL>https://rss.art19.com/the-rewatchables</stationURL>
+    <stationFile>rewatchables</stationFile>
+  </station>
 
+  <station>
+    <stationName>30 for 30</stationName>
+    <stationURL>http://www.espn.com/espnradio/feeds/rss/podcast.xml?id=19472136</stationURL>
+    <stationFile>30for30</stationFile>
+  </station>
 </stations>

@@ -141,7 +141,6 @@ namespace PodBlaster
 
                 Debug.WriteLine(fileListToCopy[foo].Path.ToString());
                 Debug.WriteLine(podcastFolder.Path.ToString());
-                //Debug.WriteLine(sandiskTargetFile.Name.ToString());
                 Debug.WriteLine(fileListToCopy[foo].Name.ToString());
 
                 StorageFile destinationFile = await podcastFolder.CreateFileAsync(fileListToCopy[foo].Name.ToString(), CreationCollisionOption.ReplaceExisting);
