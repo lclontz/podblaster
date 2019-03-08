@@ -45,7 +45,7 @@
   
       <station>
     <stationName>Slow Burn</stationName>
-    <stationURL>hhttp://feeds.megaphone.fm/watergate</stationURL>
+    <stationURL>http://feeds.megaphone.fm/watergate</stationURL>
     <stationFile>slowburn</stationFile>
   </station>
 
