@@ -37,6 +37,10 @@ namespace PodBlaster
         {
             this.InitializeComponent();
 
+            DragEventHandler OnDropEvent = new DragEventHandler(PodList_Drop);
+
+            PodList.AddHandler(Control.DropEvent, OnDropEvent , true);
+
             StatusCommand.Text = "No Active Downloads";
 
             ApplicationView.PreferredLaunchViewSize = new Size(320, 1000);
@@ -49,6 +53,8 @@ namespace PodBlaster
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            await OOBE();
 
             await Write_No_Downloaded_Eps();
 
@@ -91,7 +97,7 @@ namespace PodBlaster
 
             foreach (var n in podData)
             {
-                PodList.Items.Add(n);
+               PodList.Items.Add(n);
             }
 
            // PodList.CanDragItems = true;
@@ -102,6 +108,94 @@ namespace PodBlaster
 
             //PodList.ItemsSource = podData;
             
+
+        }
+
+        private async Task OOBE()
+        {
+            // If you haven't used the application before, this will bootstrap you with a sample XML file
+            // and create the root folder and download subfolder.
+
+            // Let's look for the folders...
+
+            try {
+                StorageFolder podBlasterParent = await KnownFolders.MusicLibrary.GetFolderAsync(@"PodBlaster");
+                StorageFolder podBlasterDownloads = await KnownFolders.MusicLibrary.GetFolderAsync(@"PodBlaster\Downloads");
+            } catch
+            {
+                StorageFolder musicLibrary = await KnownFolders.MusicLibrary.CreateFolderAsync(@"PodBlaster");
+                StorageFolder musicLibraryDownloads = await musicLibrary.CreateFolderAsync(@"Downloads");
+
+            }
+
+            // Let's look for an XML file...
+
+            try
+            {
+                StorageFolder podBlasterParent =  await KnownFolders.MusicLibrary.GetFolderAsync(@"PodBlaster");
+                StorageFile podBlasterXML = await podBlasterParent.GetFileAsync(@"stations.xml");
+            } catch {
+                StorageFolder podBlasterParent = await KnownFolders.MusicLibrary.GetFolderAsync(@"PodBlaster");
+
+                XmlDocument outputXML = new XmlDocument();
+
+
+                XmlElement rootElement = outputXML.CreateElement(string.Empty, "stations", string.Empty);
+                outputXML.AppendChild(rootElement);
+
+                XmlSignificantWhitespace sigws = outputXML.CreateSignificantWhitespace("\n\t");
+                rootElement.InsertAfter(sigws, rootElement.FirstChild);
+
+                List<Podcast> starterList = new List<Podcast>();
+                Podcast replyAll = new Podcast();
+                replyAll.stationName = "Reply All";
+                replyAll.stationURL = "http://feeds.gimletmedia.com/hearreplyall";
+
+                starterList.Add(replyAll);
+
+                foreach (Podcast thisOne in starterList)
+                {
+                    XmlElement stationElement = outputXML.CreateElement(string.Empty, "station", string.Empty);
+
+                    XmlElement stationNameElement = outputXML.CreateElement(string.Empty, "stationName", string.Empty);
+
+                    XmlText text1 = outputXML.CreateTextNode(thisOne.stationName);
+                    stationNameElement.AppendChild(text1);
+                    stationElement.AppendChild(stationNameElement);
+                    stationElement.InsertAfter(sigws, stationNameElement);
+
+                    XmlElement stationURLElement = outputXML.CreateElement(string.Empty, "stationURL", string.Empty);
+
+                    XmlText text2 = outputXML.CreateTextNode(thisOne.stationURL);
+                    stationURLElement.AppendChild(text2);
+                    stationElement.AppendChild(stationURLElement);
+                    stationElement.InsertAfter(sigws, stationURLElement);
+
+
+                    rootElement.AppendChild(stationElement);
+
+
+
+
+
+                    Debug.WriteLine(thisOne.stationName);
+                    Debug.WriteLine(thisOne.stationURL);
+                }
+
+
+
+                Debug.WriteLine(outputXML.InnerXml.ToString());
+             
+
+                string XMLFilePath = podBlasterParent.Path + @"\stations.xml";
+
+                StorageFile XMLFile = await podBlasterParent.CreateFileAsync("stations.xml");
+
+                await FileIO.WriteTextAsync(XMLFile, outputXML.InnerXml.ToString());
+
+                Debug.WriteLine("Wrote out XML File!");
+
+            }
 
         }
 
@@ -364,7 +458,12 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
             StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync(@"Podblaster\Downloads");
             IReadOnlyList<StorageFile> fileListToCopy = await PodBlasterFolder.GetFilesAsync();
 
-            StatusCommand.Text = "File copy started. Don't disconnect your player!";
+            if (podcastFolder != null)
+            {
+
+                StatusCommand.Text = "File copy started. Don't disconnect your player!";
+
+            
 
             for (int foo = 0; foo < fileListToCopy.Count(); foo++)
             {
@@ -379,6 +478,8 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
 
             }
             StatusCommand.Text = "Podcasts copied. You may now disconnect";
+
+            }
         }
 
 
@@ -581,7 +682,7 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
 
             await FileIO.WriteTextAsync(XMLFile, outputXML.InnerXml.ToString());
 
-            
+            Debug.WriteLine("Wrote out XML File!");
 
         }
 
@@ -626,18 +727,14 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
 
         private void TextBlock_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            Debug.WriteLine("FOO");
+            var item = (sender as MenuFlyoutItem);
+            var senderList = (ListView)sender;
+            //var senderBlock = (ListViewItem)senderList.SelectedItem;
 
-            var thisTextBlock = (TextBlock)sender;
+            var originalSource = (FrameworkElement)e.OriginalSource;
 
-
-            Debug.WriteLine(thisTextBlock.Text);
-
-            var senderBlock = (TextBlock)sender;
-
-            DeleteShowFlyout.ShowAt(senderBlock);
-
-           // Debug.WriteLine(senderBlock.)
+            Debug.WriteLine(originalSource.ToString());
+            DeleteShowFlyout.ShowAt(originalSource);
         }
 
         private async void Clear_Middle()
@@ -647,16 +744,63 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
             Background_Episodes_Image.Source = null;
         }
 
-        private void Delete_Episode(object sender, RoutedEventArgs e)
+        private async void Delete_Episode(object sender, RoutedEventArgs e)
         {
             var item = (sender as MenuFlyoutItem);
 
+            Debug.WriteLine("item is " + item.Text.ToString());
+
+            var listItem = item.DataContext.ToString();
+
+            Debug.WriteLine(listItem.ToString());
+
+            StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync(@"Podblaster\Downloads");
+            StorageFile fileToDelete = await PodBlasterFolder.GetFileAsync(listItem.ToString());
+
+            await fileToDelete.DeleteAsync();
+            await Show_Downloaded_Episodes(PodBlasterFolder);
+
             //var listItem = item.DataContext as Podcast;
 
-           // PodList.Items.Remove(listItem);
-           // Clear_Middle();
-           // Debug.WriteLine(listItem.ToString());
+            // PodList.Items.Remove(listItem);
+            // Clear_Middle();
+            // Debug.WriteLine(listItem.ToString());
+
+        }
+
+        private async void Copy_Single_File_to_MP3(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as MenuFlyoutItem);
+
+            Debug.WriteLine("item is " + item.Text.ToString());
+
+            var listItem = item.DataContext.ToString();
+
+            Debug.WriteLine(listItem.ToString());
+
+            StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync(@"Podblaster\Downloads");
+            StorageFile fileToCopy = await PodBlasterFolder.GetFileAsync(listItem.ToString());
+
+            FolderPicker picker = new FolderPicker();
+
+            picker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+
+            picker.FileTypeFilter.Add("*");
+            StorageFolder podcastFolder = await picker.PickSingleFolderAsync();
+
+            StatusCommand.Text = "File copy started. Don't disconnect your player!";
             
+
+                Debug.WriteLine(fileToCopy.Path.ToString());
+                Debug.WriteLine(podcastFolder.Path.ToString());
+                Debug.WriteLine(fileToCopy.Name.ToString());
+
+                StorageFile destinationFile = await podcastFolder.CreateFileAsync(fileToCopy.Name.ToString(), CreationCollisionOption.ReplaceExisting);
+
+                await fileToCopy.CopyAndReplaceAsync(destinationFile);
+            
+            StatusCommand.Text = "Podcast copied. You may now disconnect";
+
         }
 
         private void Downloaded_Episodes_RightTapped(object sender, RightTappedRoutedEventArgs e)
@@ -670,5 +814,28 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
             Debug.WriteLine(originalSource.ToString());
             DeleteDownloadedFlyout.ShowAt(originalSource);
         }
+
+        private  async void PodList_DropCompleted(UIElement sender, DropCompletedEventArgs args)
+        {
+            Debug.WriteLine("DropCompleted Fired!");
+            await Dump_Out_XML();
+        }
+
+        private async void PodList_Drop(object sender, DragEventArgs e)
+        {
+            Debug.WriteLine("Drop Fired!");
+            await Dump_Out_XML();
+        }
+
+        private async void PodList_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            Debug.WriteLine("Drag Items Completed Fired!");
+            await Dump_Out_XML();
+        }
+
+        private void PodList_DragEnter(object sender, DragEventArgs e)
+        {
+                e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+         }
     }
 }

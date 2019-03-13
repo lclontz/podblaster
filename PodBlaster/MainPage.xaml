@@ -15,6 +15,7 @@
 
         <MenuFlyout x:Name="DeleteDownloadedFlyout" x:Key="DeleteDownloadedFlyoutKey">
             <MenuFlyoutItem Text="Delete Episode" Click="Delete_Episode" />
+            <MenuFlyoutItem Text="Copy Episode to Player" Click="Copy_Single_File_to_MP3" />
         </MenuFlyout>
 
     </Page.Resources>
@@ -38,13 +39,13 @@
             <CommandBar.Content>
                 <StackPanel Orientation="Horizontal"   >
 
-                    <TextBlock Text="" x:Name="StatusCommand" Margin="20,10,20,0"></TextBlock>
+                    <TextBlock Text="" x:Name="StatusCommand" Margin="20,10,20,0" MaxWidth="400"></TextBlock>
                 </StackPanel>
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="DebugMe" Click="DebugMe_Click"/>
             <AppBarButton Icon="Add" Label="Add a New Show" Click="Add_New_Show"/>
-            <AppBarButton Icon="Copy" Label="Copy to Player" Click="Copy_Files_to_MP3"/>
-            <AppBarButton Icon="Delete" Label="Clear Downloaded" Click="Clear_Cache_Button_Click"/>
+            <AppBarButton Icon="Copy" Label="Copy Downloaded to Player" Click="Copy_Files_to_MP3"/>
+            <AppBarButton Icon="Delete" Label="Clear Downloaded Episodes" Click="Clear_Cache_Button_Click"/>
 
         </CommandBar>
 
@@ -53,15 +54,29 @@
 
         </TextBox>
 
-        <ListView Margin="0,48,0,0" CanReorderItems="true" Grid.Column ="0" Grid.Row="1"   SelectionMode="Single"x:Name="PodList" IsItemClickEnabled="True" ItemClick="PodList_ItemClick" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="auto" ShowsScrollingPlaceholders="true" >
+        <ListView Margin="0,48,0,0" 
+                  CanReorderItems="true" 
+                  Grid.Column ="0" Grid.Row="1" 
+                  AllowDrop="true"
+                  DragOver="PodList_Drop"
+                  Drop="PodList_Drop"
+                  DragItemsCompleted="PodList_DragItemsCompleted"
+                  DragEnter="PodList_DragEnter"
+                  DropCompleted="PodList_DropCompleted"
+                  SelectionMode="Single" x:Name="PodList" 
+                  IsItemClickEnabled="True" ItemClick="PodList_ItemClick" 
+                  HorizontalAlignment="Left"  VerticalAlignment="Top" 
+                  Width="auto" ShowsScrollingPlaceholders="true" ReorderMode="Enabled" 
+                  IsRightTapEnabled="True"
+                  RightTapped="TextBlock_RightTapped">
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding stationName}" IsRightTapEnabled="True" RightTapped="TextBlock_RightTapped">
-
-                        </TextBlock>
-                    </StackPanel>
+                    <TextBlock Text="{Binding stationName}" Drop="PodList_Drop"
+                  
+                  DragEnter="PodList_DragEnter"
+                  DropCompleted="PodList_DropCompleted"
+                               />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
