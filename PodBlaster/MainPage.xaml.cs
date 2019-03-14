@@ -7,6 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
 using System.Xml;
 using System.Collections.ObjectModel;
@@ -170,27 +171,13 @@ namespace PodBlaster
                     stationURLElement.AppendChild(text2);
                     stationElement.AppendChild(stationURLElement);
                     stationElement.InsertAfter(sigws, stationURLElement);
-
-
                     rootElement.AppendChild(stationElement);
-
-
-
-
-
-                    Debug.WriteLine(thisOne.stationName);
-                    Debug.WriteLine(thisOne.stationURL);
                 }
-
-
-
+                
                 Debug.WriteLine(outputXML.InnerXml.ToString());
-             
 
                 string XMLFilePath = podBlasterParent.Path + @"\stations.xml";
-
                 StorageFile XMLFile = await podBlasterParent.CreateFileAsync("stations.xml");
-
                 await FileIO.WriteTextAsync(XMLFile, outputXML.InnerXml.ToString());
 
                 Debug.WriteLine("Wrote out XML File!");
@@ -258,10 +245,21 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
             string feedName = poddy.stationURL;
 
             Uri rssFeed = new Uri(feedName);
-            feed = await client.RetrieveFeedAsync(rssFeed);
+            try
+            {
+                feed = await client.RetrieveFeedAsync(rssFeed);
 
-            PushFeedToDetails(feed);
-            
+                PushFeedToDetails(feed);
+            } catch
+            {
+                var messageDialog = new MessageDialog("There's a problem downloading that feed. " +
+                    "If you're connected to the Internet, double-check the RSS URL.");
+                messageDialog.Commands.Add(new UICommand("Close"));
+                messageDialog.DefaultCommandIndex = 0;
+                messageDialog.CancelCommandIndex = 0;
+
+                await messageDialog.ShowAsync();
+            }
         }
 
 
@@ -271,11 +269,7 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
 
             Background_Episodes_Image.Opacity = 0;
 
-            // Show Image
             Uri getImageFromFeed = feed.ImageUri;
-            //ImageSource feedImage = getImageFromFeed.ToString();
-
-           // Debug.WriteLine(getImageFromFeed.ToString());
 
             try { 
 

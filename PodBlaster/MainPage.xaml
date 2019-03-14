@@ -5,6 +5,7 @@
     xmlns:local="using:PodBlaster"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:UI="using:Microsoft.Advertising.WinRT.UI"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -31,7 +32,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="100" />
 
         </Grid.RowDefinitions>
 
@@ -49,7 +49,7 @@
 
         </CommandBar>
 
-        <Image  Canvas.ZIndex="2" Grid.Row="1" Grid.Column="1" x:Name="Background_Episodes_Image" Opacity="0" ImageOpened="Background_Episodes_Image_ImageOpened"/>
+        <Image  Canvas.ZIndex="2" Grid.Row="1" Grid.Column="1" x:Name="Background_Episodes_Image" Opacity="0" ImageOpened="Background_Episodes_Image_ImageOpened" Margin="0,0,0,105"/>
         <TextBox Grid.Row="1" Grid.Column ="0" x:Name="Shows"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Your Shows" IsReadOnly="True" Height="40" VerticalAlignment="Top">
 
         </TextBox>
@@ -66,9 +66,10 @@
                   SelectionMode="Single" x:Name="PodList" 
                   IsItemClickEnabled="True" ItemClick="PodList_ItemClick" 
                   HorizontalAlignment="Left"  VerticalAlignment="Top" 
-                  Width="auto" ShowsScrollingPlaceholders="true" ReorderMode="Enabled" 
+                  ShowsScrollingPlaceholders="true" ReorderMode="Enabled" 
                   IsRightTapEnabled="True"
-                  RightTapped="TextBlock_RightTapped">
+                  RightTapped="TextBlock_RightTapped"
+                  Width="190">
 
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -85,12 +86,19 @@
         </Border>
 
         <TextBox x:Name="PodcastHeader" Grid.Column ="1" Grid.Row="1" FontSize="22" FontWeight="Bold" BorderThickness="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="65,25,0,0" IsReadOnly="True" />
-        <ListView MinWidth="300" Grid.Row="1" Grid.Column ="1" SelectionMode = "None" IsItemClickEnabled = "True" x:Name="Episode_List" ShowsScrollingPlaceholders="True"  Height="auto"  ItemClick="Episode_List_ItemClick" Canvas.ZIndex="3" Margin="0,65,0,0" />
+        <ListView MinWidth="300" Grid.Row="1" Grid.Column ="1" SelectionMode = "None" IsItemClickEnabled = "True" x:Name="Episode_List" ShowsScrollingPlaceholders="True"  Height="auto"  ItemClick="Episode_List_ItemClick" Canvas.ZIndex="3" Margin="0,65,0,105" />
+
+        <UI:AdControl ApplicationId="3f83fe91-d6be-434d-a0ae-7351c5a997f1"
+ 		AdUnitId="test"
+ 		HorizontalAlignment="center"
+ 		Width="640"
+ 		Height="100"
+                      Grid.Column="1" Grid.Row="1"  VerticalAlignment="Bottom"/>
 
         <TextBox Grid.Row="1" Grid.Column ="2" x:Name="Downloaded_Header"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Downloaded Episodes" IsReadOnly="True" />
-        <ListView Grid.Row="1" Grid.Column ="2"  IsItemClickEnabled = "True" Height="auto" ShowsScrollingPlaceholders="True" Width="auto" x:Name="Downloaded_Episodes"  HorizontalAlignment="Stretch" Margin="0,48,0,0" VerticalAlignment="Stretch" FontFamily="Segoe UI" SelectionChanged="Downloaded_Episodes_ButtonClick" RightTapped="Downloaded_Episodes_RightTapped">
+        <ListView Grid.Row="1" Grid.Column ="2"  IsItemClickEnabled = "True" Height="auto" ShowsScrollingPlaceholders="True" Width="auto" x:Name="Downloaded_Episodes"  HorizontalAlignment="Stretch" Margin="0,48,0,105" VerticalAlignment="Stretch" FontFamily="Segoe UI" SelectionChanged="Downloaded_Episodes_ButtonClick" RightTapped="Downloaded_Episodes_RightTapped">
                 </ListView>
-        <MediaPlayerElement AutoPlay="True" Grid.Row="2" Grid.ColumnSpan="3" x:Name="Podcast_Player_Element" AreTransportControlsEnabled="True" VerticalAlignment="Top" Height="100" Canvas.ZIndex="4"/>
+        <MediaPlayerElement AutoPlay="True" Grid.Row="2" Grid.Column="2" x:Name="Podcast_Player_Element" AreTransportControlsEnabled="True" VerticalAlignment="bottom" Height="100" Canvas.ZIndex="4"/>
 
 
 
