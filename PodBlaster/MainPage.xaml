@@ -86,14 +86,9 @@
         </Border>
 
         <TextBox x:Name="PodcastHeader" Grid.Column ="1" Grid.Row="1" FontSize="22" FontWeight="Bold" BorderThickness="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="65,25,0,0" IsReadOnly="True" />
-        <ListView MinWidth="300" Grid.Row="1" Grid.Column ="1" SelectionMode = "None" IsItemClickEnabled = "True" x:Name="Episode_List" ShowsScrollingPlaceholders="True"  Height="auto"  ItemClick="Episode_List_ItemClick" Canvas.ZIndex="3" Margin="0,65,0,105" />
+        <ListView MinWidth="300" Grid.Row="1" Grid.Column ="1" SelectionMode = "None" IsItemClickEnabled = "True" x:Name="Episode_List" ShowsScrollingPlaceholders="True"  Height="auto"  ItemClick="Episode_List_ItemClick" Canvas.ZIndex="3" Margin="0,65,0,0" />
 
-        <UI:AdControl ApplicationId="3f83fe91-d6be-434d-a0ae-7351c5a997f1"
- 		AdUnitId="test"
- 		HorizontalAlignment="center"
- 		Width="640"
- 		Height="100"
-                      Grid.Column="1" Grid.Row="1"  VerticalAlignment="Bottom"/>
+        
 
         <TextBox Grid.Row="1" Grid.Column ="2" x:Name="Downloaded_Header"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Downloaded Episodes" IsReadOnly="True" />
         <ListView Grid.Row="1" Grid.Column ="2"  IsItemClickEnabled = "True" Height="auto" ShowsScrollingPlaceholders="True" Width="auto" x:Name="Downloaded_Episodes"  HorizontalAlignment="Stretch" Margin="0,48,0,105" VerticalAlignment="Stretch" FontFamily="Segoe UI" SelectionChanged="Downloaded_Episodes_ButtonClick" RightTapped="Downloaded_Episodes_RightTapped">
