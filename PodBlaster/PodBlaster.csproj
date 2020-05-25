@@ -98,6 +98,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditShow.xaml.cs">
+      <DependentUpon>EditShow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PlugInFilter.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="MsgBox.cs" />
@@ -173,6 +176,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="AddNewShow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditShow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

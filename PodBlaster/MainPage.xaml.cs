@@ -24,6 +24,7 @@ using TagLibUWP;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.Media.Core;
+using Windows.Storage.AccessCache;
 
 namespace PodBlaster
 {
@@ -33,6 +34,11 @@ namespace PodBlaster
         public ObservableCollection<Podcast_Episode> episodes { get; private set; }
 
         int currentlyDownloading = 0;
+
+        StorageFolder playerTargetFolder;
+
+
+        
 
         public MainPage()
         {
@@ -212,28 +218,6 @@ namespace PodBlaster
             
         }
 
-        /*
-private StorageFolder Get_PodBlaster_Folder(string mode) {
-
-   string filePath;
-
-   if (mode == "downloads") {
-       filePath = KnownFolders.MusicLibrary.Path + @"\Podblaster\Downloads";
-   } else {
-       //string filePathEnv = @"%USERPROFILE%\Music\Podblaster";
-       //string filePathstring filePathVariables = Environment.ExpandEnvironmentVariables(filePathEnv);
-
-       filePath = UserDataPaths.GetDefault().Music + @"\Podblaster";
-       
-       Debug.WriteLine(filePath);
-
-   }
-
-   return filePath;
-
-}
-*/
-
         private async void PodList_ItemClick(object sender, ItemClickEventArgs e)
         {
             
@@ -252,13 +236,9 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
                 PushFeedToDetails(feed);
             } catch
             {
-                var messageDialog = new MessageDialog("There's a problem downloading that feed. " +
+                await Show_Error_Dialog("There's a problem downloading that feed. " +
                     "If you're connected to the Internet, double-check the RSS URL.");
-                messageDialog.Commands.Add(new UICommand("Close"));
-                messageDialog.DefaultCommandIndex = 0;
-                messageDialog.CancelCommandIndex = 0;
 
-                await messageDialog.ShowAsync();
             }
         }
 
@@ -307,6 +287,7 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
                 //  Debug.WriteLine(item.PublishedDate.ToString());
 
                 TextBlock TextBox = new TextBlock();
+                TextBox.TextWrapping = TextWrapping.Wrap;
                 TextBox.Text = item.PublishedDate.ToLocalTime().Year.ToString() + "-" +
                     item.PublishedDate.ToLocalTime().Month.ToString() + "-" +
                     item.PublishedDate.ToLocalTime().Day.ToString() + ": " + item.Title.Text;
@@ -391,7 +372,9 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
             if (currentlyDownloading == 0)
             {
                 StatusCommand.Text = "All downloads complete.";
+                ProgressUnderway.Visibility = Visibility.Collapsed;
             } else {
+                ProgressUnderway.Visibility = Visibility.Visible;
                 if (currentlyDownloading == 1) { 
                 StatusCommand.Text = currentlyDownloading + " file currently downloading. ";
                 } else
@@ -405,6 +388,7 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
         private async Task Add_Another_Download(string fileNameDownloading)
         {
             currentlyDownloading++;
+            ProgressUnderway.Visibility = Visibility.Visible;
             if (currentlyDownloading == 1)
             {
                 StatusCommand.Text = currentlyDownloading + " file currently downloading. ";
@@ -443,18 +427,26 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
         private async void Copy_Files_to_MP3(object sender, RoutedEventArgs e)
         {
 
+            
             FolderPicker picker = new FolderPicker();
+
+            picker.ViewMode = PickerViewMode.List;
 
             picker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
             
+            
             picker.FileTypeFilter.Add("*");
             StorageFolder podcastFolder = await picker.PickSingleFolderAsync();
+
+            Debug.WriteLine("This is the list: " + StorageApplicationPermissions.FutureAccessList.CheckAccess(podcastFolder));
+
+
             StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync(@"Podblaster\Downloads");
             IReadOnlyList<StorageFile> fileListToCopy = await PodBlasterFolder.GetFilesAsync();
 
             if (podcastFolder != null)
             {
-
+                ProgressUnderway.Visibility = Visibility.Visible;
                 StatusCommand.Text = "File copy started. Don't disconnect your player!";
 
             
@@ -472,8 +464,12 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
 
             }
             StatusCommand.Text = "Podcasts copied. You may now disconnect";
-
+                ProgressUnderway.Visibility = Visibility.Collapsed;
+                StorageApplicationPermissions.FutureAccessList.Add(podcastFolder);
             }
+
+            
+
         }
 
 
@@ -495,7 +491,25 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
 
         }
 
-        private async void Episode_List_ItemClick(object sender, ItemClickEventArgs e)
+        private async void Choose_Player_Folder(object sender, RoutedEventArgs e)
+        {
+            FolderPicker picker = new FolderPicker();
+
+            picker.ViewMode = PickerViewMode.List;
+
+            picker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+
+
+            picker.FileTypeFilter.Add("*");
+            playerTargetFolder = await picker.PickSingleFolderAsync();
+
+            string faToken = StorageApplicationPermissions.FutureAccessList.Add(playerTargetFolder);
+
+
+
+        }
+
+            private async void Episode_List_ItemClick(object sender, ItemClickEventArgs e)
         {
 
             TextBlock selectedTextBlock = e.ClickedItem as TextBlock;
@@ -564,7 +578,7 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
             ListViewItem selectedListItem = (ListViewItem)Downloaded_Episodes.SelectedItem;
             //ListViewItem thisOne = selectedListItem.Content.ToString();
 
-            Debug.WriteLine("The index is " + selectedListItem.Content.ToString() );
+          //  Debug.WriteLine("The index is " + selectedListItem.Content.ToString() );
             string playFileName = selectedListItem.Content.ToString();
 
             
@@ -831,5 +845,23 @@ private StorageFolder Get_PodBlaster_Folder(string mode) {
         {
                 e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
          }
+
+
+
+        private async Task Show_Error_Dialog(string errorMessage)
+        {
+
+            var messageDialog = new MessageDialog(errorMessage);
+            messageDialog.Commands.Add(new UICommand("Close"));
+            messageDialog.DefaultCommandIndex = 0;
+            messageDialog.CancelCommandIndex = 0;
+
+            await messageDialog.ShowAsync();
+        }
+
+        private void Edit_Show(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

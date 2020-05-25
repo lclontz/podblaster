@@ -11,6 +11,7 @@
 
     <Page.Resources>
         <MenuFlyout x:Name="DeleteShowFlyout" x:Key="DeleteShowFlyoutKey">
+            <MenuFlyoutItem Text="Edit Show" Click="Edit_Show" />
             <MenuFlyoutItem Text="Delete Show" Click="Delete_Show" />
         </MenuFlyout>
 
@@ -27,7 +28,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" MinWidth="350"/>
-            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -46,9 +47,10 @@
             <AppBarButton Icon="Add" Label="Add a New Show" Click="Add_New_Show"/>
             <AppBarButton Icon="Copy" Label="Copy Downloaded to Player" Click="Copy_Files_to_MP3"/>
             <AppBarButton Icon="Delete" Label="Clear Downloaded Episodes" Click="Clear_Cache_Button_Click"/>
+            <AppBarButton Icon="MapDrive" Label="Choose Player Folder" Click="Choose_Player_Folder" />
 
         </CommandBar>
-
+        <ProgressBar Visibility="Collapsed" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" IsIndeterminate="True" Margin="0,26,0,0" x:Name="ProgressUnderway"></ProgressBar>
         <Image  Canvas.ZIndex="2" Grid.Row="1" Grid.Column="1" x:Name="Background_Episodes_Image" Opacity="0" ImageOpened="Background_Episodes_Image_ImageOpened" Margin="0,0,0,105"/>
         <TextBox Grid.Row="1" Grid.Column ="0" x:Name="Shows"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Your Shows" IsReadOnly="True" Height="40" VerticalAlignment="Top">
 
@@ -74,7 +76,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding stationName}" Drop="PodList_Drop"
-                  
+                  TextWrapping="Wrap"
                   DragEnter="PodList_DragEnter"
                   DropCompleted="PodList_DropCompleted"
                                />
@@ -91,8 +93,13 @@
         
 
         <TextBox Grid.Row="1" Grid.Column ="2" x:Name="Downloaded_Header"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Downloaded Episodes" IsReadOnly="True" />
-        <ListView Grid.Row="1" Grid.Column ="2"  IsItemClickEnabled = "True" Height="auto" ShowsScrollingPlaceholders="True" Width="auto" x:Name="Downloaded_Episodes"  HorizontalAlignment="Stretch" Margin="0,48,0,105" VerticalAlignment="Stretch" FontFamily="Segoe UI" SelectionChanged="Downloaded_Episodes_ButtonClick" RightTapped="Downloaded_Episodes_RightTapped">
-                </ListView>
+        <ListView Grid.Row="1" Grid.Column ="2"  IsItemClickEnabled = "True" 
+                  Height="auto" ShowsScrollingPlaceholders="True" Width="auto" 
+                  
+                  x:Name="Downloaded_Episodes"  HorizontalAlignment="Stretch" 
+                  Margin="0,48,0,105" VerticalAlignment="Stretch" FontFamily="Segoe UI" 
+                  SelectionChanged="Downloaded_Episodes_ButtonClick" RightTapped="Downloaded_Episodes_RightTapped"
+                  HorizontalContentAlignment="Stretch" />
         <MediaPlayerElement AutoPlay="True" Grid.Row="2" Grid.Column="2" x:Name="Podcast_Player_Element" AreTransportControlsEnabled="True" VerticalAlignment="bottom" Height="100" Canvas.ZIndex="4"/>
 
 
