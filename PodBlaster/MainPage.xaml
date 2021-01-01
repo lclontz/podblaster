@@ -5,44 +5,104 @@
     xmlns:local="using:PodBlaster"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:UI="using:Microsoft.Advertising.WinRT.UI"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
+    <Page.Resources>
+        <MenuFlyout x:Name="DeleteShowFlyout" x:Key="DeleteShowFlyoutKey">
+            <MenuFlyoutItem Text="Edit Show" Click="Edit_Show" />
+            <MenuFlyoutItem Text="Delete Show" Click="Delete_Show" />
+        </MenuFlyout>
+
+        <MenuFlyout x:Name="DeleteDownloadedFlyout" x:Key="DeleteDownloadedFlyoutKey">
+            <MenuFlyoutItem Text="Delete Episode" Click="Delete_Episode" />
+            <MenuFlyoutItem Text="Copy Episode to Player" Click="Copy_Single_File_to_MP3" />
+        </MenuFlyout>
+
+    </Page.Resources>
+
+
+
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" MinWidth="350"/>
+            <ColumnDefinition Width="320" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+
+        </Grid.RowDefinitions>
+
+        <CommandBar Grid.Row="0" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"  Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="0,0,10,0" VerticalAlignment="Top">
             <CommandBar.Content>
                 <StackPanel Orientation="Horizontal"   >
-                
-                    <TextBlock Text="# of Episodes to Download: " x:Name="EpisodeLabel" Margin="20,0,20,0"></TextBlock>
-                    <ComboBox x:Name="epDownloads" HorizontalAlignment="Left"   Height="32" Width="44" SelectedItem="1" Margin="0,0,20,0">
-                        <x:String>1</x:String>
-                        <x:String>2</x:String>
-                        <x:String>3</x:String>
-                        <x:String>4</x:String>
-                        <x:String>5</x:String>
-                        <x:String>6</x:String>
-                        <x:String>7</x:String>
-                        <x:String>8</x:String>
-                    </ComboBox>
-                    <TextBlock Text="" x:Name="StatusCommand" Margin="0,0,20,0"></TextBlock>
+
+                    <TextBlock Text="" x:Name="StatusCommand" Margin="20,10,20,0" MaxWidth="400"></TextBlock>
                 </StackPanel>
             </CommandBar.Content>
-            <AppBarButton Icon="Add" Label="Copy to Player" Click="Copy_Files_to_MP3"/>
-            <AppBarButton Icon="Delete" Label="Clear Cache" Click="Clear_Cache_Button_Click"/>
+            <AppBarButton Icon="Accept" Label="DebugMe" Click="DebugMe_Click"/>
+            <AppBarButton Icon="Add" Label="Add a New Show" Click="Add_New_Show"/>
+            <AppBarButton Icon="Copy" Label="Copy Downloaded to Player" Click="Copy_Files_to_MP3"/>
+            <AppBarButton Icon="Delete" Label="Clear Downloaded Episodes" Click="Clear_Cache_Button_Click"/>
+            <AppBarButton Icon="MapDrive" Label="Choose Player Folder" Click="Choose_Player_Folder" />
 
         </CommandBar>
+        <ProgressBar Visibility="Collapsed" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" IsIndeterminate="True" Margin="0,26,0,0" x:Name="ProgressUnderway"></ProgressBar>
+        <Image  Canvas.ZIndex="2" Grid.Row="1" Grid.Column="1" x:Name="Background_Episodes_Image" Opacity="0" ImageOpened="Background_Episodes_Image_ImageOpened" Margin="0,0,0,105"/>
+        <TextBox Grid.Row="1" Grid.Column ="0" x:Name="Shows"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Your Shows" IsReadOnly="True" Height="40" VerticalAlignment="Top">
 
+        </TextBox>
 
-        <ListView SelectionMode="None" x:Name="PodList" IsItemClickEnabled="True" ItemClick="PodList_ItemClick" HorizontalAlignment="Left" Height="590" Margin="10,48,0,0" VerticalAlignment="Top" Width="293" >
+        <ListView Margin="0,48,0,0" 
+                  CanReorderItems="true" 
+                  Grid.Column ="0" Grid.Row="1" 
+                  AllowDrop="true"
+                  DragOver="PodList_Drop"
+                  Drop="PodList_Drop"
+                  DragItemsCompleted="PodList_DragItemsCompleted"
+                  DragEnter="PodList_DragEnter"
+                  DropCompleted="PodList_DropCompleted"
+                  SelectionMode="Single" x:Name="PodList" 
+                  IsItemClickEnabled="True" ItemClick="PodList_ItemClick" 
+                  HorizontalAlignment="Left"  VerticalAlignment="Top" 
+                  ShowsScrollingPlaceholders="true" ReorderMode="Enabled" 
+                  IsRightTapEnabled="True"
+                  RightTapped="TextBlock_RightTapped"
+                  Width="190">
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel >
-                        <TextBlock Text="{Binding stationName}"/>
-                    </StackPanel>
+                    <TextBlock Text="{Binding stationName}" Drop="PodList_Drop"
+                  TextWrapping="Wrap"
+                  DragEnter="PodList_DragEnter"
+                  DropCompleted="PodList_DropCompleted"
+                               />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <Border BorderThickness="1" x:Name="PosterBorder" BorderBrush="white" Grid.Column="1" Grid.Row="1" Width="60" Height="60" HorizontalAlignment="Left" VerticalAlignment="top" Canvas.ZIndex="100">
+            <Image Grid.Column="1" Grid.Row="1" Height="60" Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="top" x:Name="Podcast_PosterImage" Width="60" Canvas.ZIndex="100" />
+        </Border>
+
+        <TextBox x:Name="PodcastHeader" Grid.Column ="1" Grid.Row="1" FontSize="22" FontWeight="Bold" BorderThickness="0"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="65,25,0,0" IsReadOnly="True" />
+        <ListView MinWidth="300" Grid.Row="1" Grid.Column ="1" SelectionMode = "None" IsItemClickEnabled = "True" x:Name="Episode_List" ShowsScrollingPlaceholders="True"  Height="auto"  ItemClick="Episode_List_ItemClick" Canvas.ZIndex="3" Margin="0,65,0,0" />
+
+        
+
+        <TextBox Grid.Row="1" Grid.Column ="2" x:Name="Downloaded_Header"  FontSize="22" FontWeight="Bold" BorderThickness="0" Text="Downloaded Episodes" IsReadOnly="True" />
+        <ListView Grid.Row="1" Grid.Column ="2"  IsItemClickEnabled = "True" 
+                  Height="auto" ShowsScrollingPlaceholders="True" Width="auto" 
+                  
+                  x:Name="Downloaded_Episodes"  HorizontalAlignment="Stretch" 
+                  Margin="0,48,0,105" VerticalAlignment="Stretch" FontFamily="Segoe UI" 
+                  SelectionChanged="Downloaded_Episodes_ButtonClick" RightTapped="Downloaded_Episodes_RightTapped"
+                  HorizontalContentAlignment="Stretch" />
+        <MediaPlayerElement AutoPlay="True" Grid.Row="2" Grid.Column="2" x:Name="Podcast_Player_Element" AreTransportControlsEnabled="True" VerticalAlignment="bottom" Height="100" Canvas.ZIndex="4"/>
+
+
 
     </Grid>
 </Page>
