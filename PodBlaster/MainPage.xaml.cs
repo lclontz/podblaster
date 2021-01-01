@@ -288,9 +288,16 @@ namespace PodBlaster
 
                 TextBlock TextBox = new TextBlock();
                 TextBox.TextWrapping = TextWrapping.Wrap;
+
+                string thisMonth = item.PublishedDate.ToLocalTime().Month.ToString();
+                string thisDay = item.PublishedDate.ToLocalTime().Day.ToString();
+
+                if (thisMonth.Length == 1) { thisMonth = "0" + thisMonth; }
+                if (thisDay.Length == 1) { thisDay = "0" + thisDay; }
+
+
                 TextBox.Text = item.PublishedDate.ToLocalTime().Year.ToString() + "-" +
-                    item.PublishedDate.ToLocalTime().Month.ToString() + "-" +
-                    item.PublishedDate.ToLocalTime().Day.ToString() + ": " + item.Title.Text;
+                    thisMonth + "-" + thisDay + ": " + item.Title.Text;
                     
                     
                 //Uri currentAddUri = new Uri(item.ItemUri.AbsoluteUri);
@@ -354,17 +361,40 @@ namespace PodBlaster
 
             await download.StartAsync();
 
+            Debug.WriteLine("Download started...");
+
             await CompleteDownloading(System.IO.Path.GetFileName(uri.ToString()));
+            Debug.WriteLine("Download complete...");
 
             //destinationFile.RenameAsync()
 
-            await destinationFile.RenameAsync(showName + " - " + episodeNameString + ".mp3", NameCollisionOption.ReplaceExisting);
+            Debug.WriteLine("Destination file is " + destinationFile.Name.ToString());
+            showName = showName.Replace("'", "");
+            showName = showName.Replace(":", " - ");
+            episodeNameString = episodeNameString.Replace("'", "");
+            episodeNameString = episodeNameString.Replace(":", " - ");
+
+            try {
+                await destinationFile.RenameAsync(showName + " - " + episodeNameString + ".mp3", NameCollisionOption.ReplaceExisting);
+                //await destinationFile.RenameAsync(episodeNameString + ".mp3", NameCollisionOption.ReplaceExisting);
+            }
+
+            catch (Exception e)
+            {
+                Debug.WriteLine("We're in the catch");
+                Debug.WriteLine(e);
+                Debug.WriteLine(destinationFile.Name.ToString());
+            }
+
+            Debug.WriteLine("We're through the rename...");
 
             await FixUp_ID3_Tags(destinationFile, showName, episodeNameString);
 
             await Show_Downloaded_Episodes(PodBlasterFolder);
            
         }
+
+
 
         private async Task CompleteDownloading(string fileNameDownloading)
         {
@@ -522,6 +552,8 @@ namespace PodBlaster
             string nameOfShow = selectedTextBlock.Text.ToString();
 
             foreach (var c in Path.GetInvalidFileNameChars()) { nameOfShow = nameOfShow.Replace(c, '-'); }
+            nameOfShow = nameOfShow.Replace("'", " ");
+            nameOfShow = nameOfShow.Replace(":", " - ");
 
             await HttpDownloadAsync(thisLinkURL.NavigateUri.ToString(), nameOfShow, PodcastHeader.Text.ToString());
           
