@@ -12,7 +12,7 @@ namespace PodBlaster
         {
 
         }
-
+          
             public string stationName { get; set; }
             public string stationURL { get; set; }
 
