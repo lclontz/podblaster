@@ -468,7 +468,16 @@ namespace PodBlaster
             picker.FileTypeFilter.Add("*");
             StorageFolder podcastFolder = await picker.PickSingleFolderAsync();
 
-            Debug.WriteLine("This is the list: " + StorageApplicationPermissions.FutureAccessList.CheckAccess(podcastFolder));
+            if (podcastFolder != null)
+            {
+                // Add to MRU with metadata (For example, a string that represents the date)
+                string mruToken = Windows.Storage.AccessCache.StorageApplicationPermissions.MostRecentlyUsedList.Add(podcastFolder, "recentPodBlastFolder");
+
+                // Add to FA without metadata
+                string faToken = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(podcastFolder);
+
+                Debug.WriteLine("This is the list: " + StorageApplicationPermissions.FutureAccessList.CheckAccess(podcastFolder));
+            }
 
 
             StorageFolder PodBlasterFolder = await KnownFolders.MusicLibrary.GetFolderAsync(@"Podblaster\Downloads");
