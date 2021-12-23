@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace PodBlaster
 {
-    public class Podcast
+    public class Podcast_Episode
     {
-        public Podcast()
+        public Podcast_Episode()
         {
 
         }
-          
-            public string stationName { get; set; }
-            public string stationURL { get; set; }
+
+        public string episodeDescription { get; set; }
+        public string episodeURL { get; set; }
 
     }
 
