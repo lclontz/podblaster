@@ -92,9 +92,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AddNewShow.xaml.cs">
-      <DependentUpon>AddNewShow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="AddNewShow.xaml.cs" />
+    <Compile Include="AddNewShowAI.xaml.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -109,6 +108,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecommendShow.xaml.cs">
+      <DependentUpon>RecommendShow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TextBlockUri.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +181,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AddNewShowAI.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="EditShow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -187,10 +193,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="RecommendShow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI">
+      <Version>1.0.0-beta.7</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.7</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="TagLibUWP">
       <Version>0.1.25</Version>

@@ -1,0 +1,22 @@
+﻿<ContentDialog
+    x:Class="PodBlaster.RecommendShow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PodBlaster"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Recommend Show with AI"
+    PrimaryButtonText="Add"
+    SecondaryButtonText="Cancel"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick" IsPrimaryButtonEnabled="False"
+    
+    >
+
+    <Grid>
+        <TextBlock>If you like that show, you might like:</TextBlock>
+        <TextBlock Margin="0,24,0,0" Height="200" x:Name="ShowRecommendationText" TextWrapping="WrapWholeWords">...</TextBlock>
+    </Grid>
+    <ContentDialog.PrimaryButtonCommandParameter>jsonContentAI</ContentDialog.PrimaryButtonCommandParameter>
+</ContentDialog>

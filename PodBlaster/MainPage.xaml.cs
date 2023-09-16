@@ -666,7 +666,12 @@ namespace PodBlaster
             createPodcast.stationName = roamingSettings.Values["newFeedName"].ToString();
             createPodcast.stationURL = roamingSettings.Values["newRSSName"].ToString();
 
-            PodList.Items.Add(createPodcast);
+            if ((createPodcast.stationName != "") || (createPodcast.stationURL != ""))
+            {
+
+                PodList.Items.Add(createPodcast);
+
+            }
 
             //podcasts.Add(createPodcast);
 
@@ -674,6 +679,41 @@ namespace PodBlaster
 
             Debug.WriteLine(podcasts.Count());
 
+
+        }
+        private async void Add_New_Show_AI(object sender, RoutedEventArgs e)
+        {
+            // Instantiate window
+
+            string newFeedNameVar;
+
+            AddNewShowAI newShow = new AddNewShowAI();
+            ContentDialogResult addNewResult = await newShow.ShowAsync();
+
+            Windows.Storage.ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+            Debug.WriteLine(roamingSettings.Values["newFeedName"]);
+            Debug.WriteLine(roamingSettings.Values["newRSSName"]);
+
+            if ((string)roamingSettings.Values["newFeedName"] != "") { 
+
+            Podcast createPodcast = new Podcast();
+            createPodcast.stationName = roamingSettings.Values["newFeedName"].ToString();
+            createPodcast.stationURL = roamingSettings.Values["newRSSName"].ToString();
+
+                if ((createPodcast.stationName != "") || (createPodcast.stationURL != ""))
+                {
+
+                    PodList.Items.Add(createPodcast);
+
+                }
+              
+
+            //podcasts.Add(createPodcast);
+
+            await Dump_Out_XML();
+
+            Debug.WriteLine(podcasts.Count());
+            }
 
         }
 
@@ -901,6 +941,36 @@ namespace PodBlaster
         }
 
         private void Edit_Show(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void Recommend_Show(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as MenuFlyoutItem);
+
+            var listItem = item.DataContext as Podcast;
+
+            RecommendShow newShowRecommendation = new RecommendShow(listItem);
+            ContentDialogResult newShowRecDialog = await newShowRecommendation.ShowAsync();
+
+            Podcast createPodcast = new Podcast();
+            Windows.Storage.ApplicationDataContainer roamingSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
+            createPodcast.stationName = roamingSettings.Values["newFeedName"].ToString();
+            createPodcast.stationURL = roamingSettings.Values["newRSSName"].ToString();
+
+            if ((createPodcast.stationName != "") || (createPodcast.stationURL != "")) { 
+
+            PodList.Items.Add(createPodcast);
+
+            }
+
+            //podcasts.Add(createPodcast);
+
+            await Dump_Out_XML();
+        }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
