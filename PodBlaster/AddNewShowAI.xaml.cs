@@ -74,8 +74,8 @@ namespace PodBlaster
 
 
             OpenAIClient client = new OpenAIClient(
-new Uri(OPEN_AI_ENDPOINT),
-new AzureKeyCredential(AZURE_AI_CREDENTIAL))
+ new Uri(),
+ new AzureKeyCredential());
 
             Response<ChatCompletions> responseWithoutStream = await client.GetChatCompletionsAsync(
     "gpt-35-turbo",
